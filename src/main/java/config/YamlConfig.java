@@ -1,6 +1,8 @@
 package config;
 
 import org.simpleyaml.configuration.file.YamlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.nio.file.Files;
  * The YamlConfig class provides utility methods for loading, saving, and managing YAML configuration files.
  */
 public class YamlConfig extends YamlConfiguration {
+    private static final Logger logger = LoggerFactory.getLogger(YamlConfig.class);
     private final File file;
 
     /**
@@ -49,6 +52,7 @@ public class YamlConfig extends YamlConfiguration {
         try {
             return YamlConfiguration.loadConfiguration(file);
         } catch (IOException e) {
+            logger.error("Failed to load configuration file: {}", file.getPath(), e);
             throw new RuntimeException(e);
         }
     }
@@ -73,6 +77,7 @@ public class YamlConfig extends YamlConfiguration {
             }
             return file;
         } catch (IOException e) {
+            logger.error("Failed to create configuration file: {}", path, e);
             throw new RuntimeException(e);
         }
     }
@@ -83,8 +88,8 @@ public class YamlConfig extends YamlConfiguration {
     public void save() {
         try {
             save(file);
-        } catch (IOException ignored) {
-
+        } catch (IOException e) {
+            logger.error("Failed to save configuration file: {}", file.getPath(), e);
         }
     }
 }
