@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.pixelservices</groupId>
+  <artifactId>PTK</artifactId>
+
+  <version>0.0.1-ALPHA</version>
+  <name>PixelToolkit</name>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <!-- YAML Parsing -->
+    <dependency>
+      <groupId>com.github.Carleslc.Simple-YAML</groupId>
+      <artifactId>Simple-Yaml</artifactId>
+      <version>1.8.4</version>
+    </dependency>
+  </dependencies>
+
+</project>
