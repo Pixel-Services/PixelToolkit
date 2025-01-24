@@ -4,7 +4,7 @@
   <groupId>com.pixelservices</groupId>
   <artifactId>PTK</artifactId>
 
-  <version>1.0</version>
+  <version>1.1</version>
   <name>PixelToolkit</name>
   <description>PixelToolkit (PTK) is a Java API that provides essential utilities, wrappers, and foundational components used across all Pixel Services projects.</description>
 
