@@ -1,8 +1,8 @@
 package com.pixelservices.config;
 
+import com.pixelservices.logger.Logger;
+import com.pixelservices.logger.LoggerFactory;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class YamlConfig extends YamlConfiguration {
         try {
             return YamlConfiguration.loadConfiguration(file);
         } catch (IOException e) {
-            logger.error("Failed to load configuration file: {}", file.getPath(), e);
+            logger.error("Failed to load configuration file: " + file.getPath(), e);
             throw new RuntimeException(e);
         }
     }
@@ -77,7 +77,7 @@ public class YamlConfig extends YamlConfiguration {
             }
             return file;
         } catch (IOException e) {
-            logger.error("Failed to create configuration file: {}", path, e);
+            logger.error("Failed to create configuration file: " + path, e);
             throw new RuntimeException(e);
         }
     }
@@ -89,7 +89,7 @@ public class YamlConfig extends YamlConfiguration {
         try {
             save(file);
         } catch (IOException e) {
-            logger.error("Failed to save configuration file: {}", file.getPath(), e);
+            logger.error("Failed to save configuration file: " + file.getPath(), e);
         }
     }
 }
