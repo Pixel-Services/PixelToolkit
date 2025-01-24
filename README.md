@@ -37,7 +37,6 @@ To include Flash in your project, add the following dependency and repository to
 
 ## Usage
 ### Logging
-Logging
 Create a logger instance and use it to log messages at different levels, create Listeners to handle log events, and set a custom formatter:
 ```java
 import com.pixelservices.logger.Logger;
