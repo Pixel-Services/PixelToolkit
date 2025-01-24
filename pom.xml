@@ -4,8 +4,23 @@
   <groupId>com.pixelservices</groupId>
   <artifactId>PTK</artifactId>
 
-  <version>0.0.1-ALPHA</version>
+  <version>0.0.1</version>
   <name>PixelToolkit</name>
+  <description>PixelToolkit (PTK) is a Java API that provides essential utilities, wrappers, and foundational components used across all Pixel Services projects.</description>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <distributionManagement>
+    <repository>
+      <id>Pixel-Services</id>
+      <url>https://maven.pixel-services.com/releases</url>
+    </repository>
+  </distributionManagement>
 
   <repositories>
     <repository>
