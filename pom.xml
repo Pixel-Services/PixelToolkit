@@ -36,7 +36,14 @@
       <artifactId>Simple-Yaml</artifactId>
       <version>1.8.4</version>
     </dependency>
-  </dependencies>
 
+    <!-- JUnit Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>
