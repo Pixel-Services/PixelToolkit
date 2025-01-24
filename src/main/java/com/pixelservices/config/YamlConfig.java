@@ -1,4 +1,4 @@
-package config;
+package com.pixelservices.config;
 
 import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class YamlConfig extends YamlConfiguration {
      * Constructs a YamlConfig instance of the default configuration file.
      */
     public YamlConfig() {
-        this("config.yml");
+        this("com.pixelservices.config.yml");
     }
 
     /**
