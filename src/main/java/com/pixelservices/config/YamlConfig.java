@@ -7,20 +7,20 @@ import org.simpleyaml.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 /**
  * The YamlConfig class provides utility methods for loading, saving, and managing YAML configuration files.
  */
 public class YamlConfig extends YamlConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(YamlConfig.class);
+    private final String filePath;
     private final File file;
 
     /**
      * Constructs a YamlConfig instance of the default configuration file.
      */
     public YamlConfig() {
-        this("com.pixelservices.config.yml");
+        this("config.yml");
     }
 
     /**
@@ -29,55 +29,40 @@ public class YamlConfig extends YamlConfiguration {
      * @param path the path to the configuration file.
      */
     public YamlConfig(String path) {
-        this(getFile(path));
+        this.filePath = path;
+        this.file = new File(path);
+        if (file.exists()) {
+            loadConfigFromFile();
+        } else {
+            loadConfigFromJar();
+        }
     }
 
     /**
-     * Constructs a YamlConfig instance with a specified file.
-     *
-     * @param file the configuration file.
+     * Loads a YamlConfiguration from the file in the JAR.
      */
-    private YamlConfig(File file) {
-        super(loadConfig(file));
-        this.file = file;
-    }
-
-    /**
-     * Loads a YamlConfiguration from a file.
-     *
-     * @param file the configuration file to load
-     * @return the loaded YamlConfiguration
-     */
-    private static YamlConfiguration loadConfig(File file) {
-        try {
-            return YamlConfiguration.loadConfiguration(file);
+    private void loadConfigFromJar() {
+        try (InputStream resourceStream = YamlConfig.class.getClassLoader().getResourceAsStream(filePath)) {
+            if (resourceStream != null) {
+                load(resourceStream);
+            } else {
+                logger.warn("Configuration file not found in JAR: " + filePath);
+                loadFromString("");
+            }
         } catch (IOException e) {
-            logger.error("Failed to load configuration file: " + file.getPath(), e);
+            logger.error("Failed to load configuration file from JAR: " + filePath, e);
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Retrieves the configuration file.
-     *
-     * @param path the path to the configuration file.
-     * @return the configuration file
+     * Loads a YamlConfiguration from an existing file.
      */
-    private static File getFile(String path) {
-        File file = new File(path);
+    private void loadConfigFromFile() {
         try {
-            if (!file.exists()) {
-                try (InputStream resourceStream = YamlConfig.class.getClassLoader().getResourceAsStream(file.getName())) {
-                    if (resourceStream != null) {
-                        Files.copy(resourceStream, file.toPath());
-                    } else {
-                        file.createNewFile();
-                    }
-                }
-            }
-            return file;
+            load(file);
         } catch (IOException e) {
-            logger.error("Failed to create configuration file: " + path, e);
+            logger.error("Failed to load configuration file: " + file.getPath(), e);
             throw new RuntimeException(e);
         }
     }
@@ -87,6 +72,10 @@ public class YamlConfig extends YamlConfiguration {
      */
     public void save() {
         try {
+            if (!file.exists() && !file.createNewFile()) {
+                logger.error("Failed to create configuration file: " + file.getPath());
+                return;
+            }
             save(file);
         } catch (IOException e) {
             logger.error("Failed to save configuration file: " + file.getPath(), e);
