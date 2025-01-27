@@ -69,7 +69,6 @@ public abstract class AbstractPluginManager implements PluginManager {
     }
 
     protected void createPluginWrappers() {
-        logger.debug("Creating plugin wrappers from directory: " + pluginDirectory);
         try (Stream<Path> paths = Files.walk(pluginDirectory)) {
             paths.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".jar"))
@@ -80,7 +79,6 @@ public abstract class AbstractPluginManager implements PluginManager {
     }
 
     private void loadPlugins() {
-        logger.debug("Loading plugins");
         List<PluginWrapper> sortedPlugins = sortPluginsByDependencies(pluginWrappers);
         sortedPlugins.forEach(pluginWrapper -> {
             if (pluginWrapper.getState() != PluginState.CREATED) {
