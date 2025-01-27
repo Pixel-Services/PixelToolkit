@@ -4,11 +4,14 @@ import com.pixelservices.logger.Logger;
 import com.pixelservices.plugin.depedency.PluginDependency;
 import com.pixelservices.plugin.descriptor.DefaultPluginDescriptor;
 import com.pixelservices.plugin.descriptor.PluginDescriptor;
+import org.simpleyaml.configuration.Configuration;
+import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -38,16 +41,23 @@ public class YamlDescriptorFinder implements PluginDescriptorFinder {
         } catch (IOException ignored) {
             return null;
         }
-        String pluginId = yamlConfig.getString("pluginId");
-        String description = yamlConfig.getString("description");
-        String version = yamlConfig.getString("version");
+        String pluginId = yamlConfig.getString("name");
+        String description = yamlConfig.getString("description", "");
+        String version = yamlConfig.getString("version", "UNDEFINED");
         String pluginClass = yamlConfig.getString("main");
         List<String> authors = yamlConfig.getStringList("authors");
-        String license = yamlConfig.getString("license");
+        String license = yamlConfig.getString("license", "UNDEFINED");
         DefaultPluginDescriptor descriptor = new DefaultPluginDescriptor(pluginId, description, version, pluginClass, authors, license);
-        for (String dependency : yamlConfig.getConfigurationSection("dependencies").getKeys(false)) {
-            descriptor.addDependency(new PluginDependency(dependency, yamlConfig.getBoolean("dependencies." + dependency)));
+
+        ConfigurationSection configurationSection = yamlConfig.getConfigurationSection("dependencies");
+        if (configurationSection != null) {
+            try{
+                for (String dependency : configurationSection.getKeys(false)) {
+                    descriptor.addDependency(new PluginDependency(dependency, yamlConfig.getBoolean("dependencies." + dependency)));
+                }
+            } catch (Exception ignored) {}
         }
+
         return descriptor;
     }
 }

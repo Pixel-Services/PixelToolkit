@@ -6,19 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultPluginDescriptor implements PluginDescriptor {
-    private String pluginId;
-    private String description;
-    private String version;
-    private String pluginClass;
-    private List<String> authors;
-    private String license;
-    private List<PluginDependency> dependencies;
-
-    public DefaultPluginDescriptor() {
-        dependencies = new ArrayList<>();
-    }
+    private final String pluginId;
+    private final String description;
+    private final String version;
+    private final String pluginClass;
+    private final List<String> authors;
+    private final String license;
+    private final List<PluginDependency> dependencies;
 
     public DefaultPluginDescriptor(String pluginId, String description, String version, String pluginClass, List<String> authors, String license) {
+        dependencies = new ArrayList<>();
         this.pluginId = pluginId;
         this.description = description;
         this.version = version;

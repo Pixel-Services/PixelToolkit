@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractPluginManager implements PluginManager {
-    private final Logger logger = Logger.getLogger(this.getClass());
+    private final Logger logger = Logger.getLogger(AbstractPluginManager.class);
     private final List<PluginWrapper> pluginWrappers = new ArrayList<>();
     private final PluginDescriptorFinder descriptorFinder;
     private final Path pluginDirectory;
@@ -34,6 +34,15 @@ public abstract class AbstractPluginManager implements PluginManager {
 
     public AbstractPluginManager(Path directory, PluginDescriptorFinder descriptorFinder) {
         pluginDirectory = directory;
+
+        if (!Files.exists(pluginDirectory)) {
+            try {
+                Files.createDirectories(pluginDirectory);
+            } catch (IOException e) {
+                logger.error("Failed to create plugin directory", e);
+            }
+        }
+
         this.descriptorFinder = descriptorFinder;
         createPluginWrappers();
         loadPlugins();
@@ -54,13 +63,13 @@ public abstract class AbstractPluginManager implements PluginManager {
     @Override
     public PluginWrapper getPlugin(String pluginId) {
         return pluginWrappers.stream()
-                .filter(pluginWrapper -> pluginWrapper.getPlugin().getMetaData().getPluginId().equals(pluginId))
+                .filter(pluginWrapper -> pluginWrapper.getPluginDescriptor().getPluginId().equals(pluginId))
                 .findFirst()
                 .orElse(null);
     }
 
     protected void createPluginWrappers() {
-        logger.debug("Creating plugins from directory: " + pluginDirectory);
+        logger.debug("Creating plugin wrappers from directory: " + pluginDirectory);
         try (Stream<Path> paths = Files.walk(pluginDirectory)) {
             paths.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".jar"))
@@ -78,14 +87,16 @@ public abstract class AbstractPluginManager implements PluginManager {
                 return;
             }
             if (!pluginWrapper.load()) {
-                logger.error("Failed to load plugin: " + pluginWrapper.getPlugin().getMetaData().getPluginId());
+                logger.error("Failed to load plugin: " + pluginWrapper.getPluginDescriptor().getPluginId());
+            } else {
+                logger.debug("Loaded plugin: " + pluginWrapper.getPluginDescriptor().getPluginId());
             }
         });
     }
 
     private List<PluginWrapper> sortPluginsByDependencies(List<PluginWrapper> plugins) {
         Map<String, PluginWrapper> pluginMap = plugins.stream()
-                .collect(Collectors.toMap(p -> p.getPlugin().getMetaData().getPluginId(), p -> p));
+                .collect(Collectors.toMap(p -> p.getPluginDescriptor().getPluginId(), p -> p));
         List<PluginWrapper> sortedPlugins = new ArrayList<>();
         Set<String> visited = new HashSet<>();
 
@@ -102,7 +113,7 @@ public abstract class AbstractPluginManager implements PluginManager {
     }
 
     private void visit(PluginWrapper plugin, Map<String, PluginWrapper> pluginMap, List<PluginWrapper> sortedPlugins, Set<String> visited, Set<String> stack) throws CircularDependencyException, MissingDependencyException {
-        String pluginId = plugin.getPlugin().getMetaData().getPluginId();
+        String pluginId = plugin.getPluginDescriptor().getPluginId();
         if (visited.contains(pluginId)) {
             return;
         }
@@ -110,7 +121,7 @@ public abstract class AbstractPluginManager implements PluginManager {
             throw new CircularDependencyException("Circular dependency detected: " + pluginId);
         }
         stack.add(pluginId);
-        for (PluginDependency dependency : plugin.getPlugin().getMetaData().getDependencies()) {
+        for (PluginDependency dependency : plugin.getPluginDescriptor().getDependencies()) {
             PluginWrapper dependencyPlugin = pluginMap.get(dependency.getPluginId());
             if (dependencyPlugin != null) {
                 visit(dependencyPlugin, pluginMap, sortedPlugins, visited, stack);
@@ -130,7 +141,7 @@ public abstract class AbstractPluginManager implements PluginManager {
             logger.error("DescriptionFinder was unable to find a plugin descriptor for path: " + path);
             return;
         }
-        logger.debug("Found plugin wrapper descriptor: " + pluginDescriptor);
+        logger.debug("Found plugin descriptor for " + pluginDescriptor.getPluginId());
         pluginWrappers.add(new PluginWrapper(this, pluginDescriptor, path));
     }
 }

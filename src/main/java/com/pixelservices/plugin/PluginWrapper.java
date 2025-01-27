@@ -39,6 +39,10 @@ public class PluginWrapper {
         return plugin;
     }
 
+    public PluginDescriptor getPluginDescriptor() {
+        return pluginDescriptor;
+    }
+
     public PluginState getState() {
         return state;
     }
