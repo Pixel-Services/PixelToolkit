@@ -6,6 +6,7 @@ import com.pixelservices.logger.level.Level;
 import com.pixelservices.logger.listeners.LoggerLogEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,7 +71,7 @@ public class Logger {
      * @param throwable the throwable to log
      */
     public void error(Throwable throwable) {
-        log(Level.ERROR, throwable.getMessage());
+        log(Level.ERROR, formatStackTrace(throwable));
     }
 
     /**
@@ -80,7 +81,7 @@ public class Logger {
      * @param throwable the throwable to log
      */
     public void error(String message, Throwable throwable) {
-        log(Level.ERROR, message + "\n" + throwable.getMessage());
+        log(Level.ERROR, message + "\n" + formatStackTrace(throwable));
     }
 
     /**
@@ -146,5 +147,24 @@ public class Logger {
             listener.onLogEvent(event);
         }
         return event.isCancelled();
+    }
+
+    /**
+     * Formats the stack trace of a throwable to a more readable format.
+     *
+     * @param throwable the throwable to format
+     * @return the formatted stack trace
+     */
+    private String formatStackTrace(Throwable throwable) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(throwable.toString()).append("\n");
+        for (StackTraceElement element : throwable.getStackTrace()) {
+            sb.append("\tat ").append(element).append("\n");
+        }
+        Throwable cause = throwable.getCause();
+        if (cause != null) {
+            sb.append("Caused by: ").append(formatStackTrace(cause));
+        }
+        return sb.toString();
     }
 }
