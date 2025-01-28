@@ -1,23 +1,19 @@
 package com.pixelservices.plugin;
 
-import com.pixelservices.logger.Logger;
-import com.pixelservices.logger.LoggerFactory;
 import com.pixelservices.plugin.descriptor.PluginDescriptor;
+import com.pixelservices.plugin.exceptions.PluginLoadException;
 import com.pixelservices.plugin.loader.CustomClassLoader;
+import com.pixelservices.plugin.manager.PluginManager;
 
 import java.nio.file.Path;
 
 public class PluginFactory {
-    private static final Logger logger = LoggerFactory.getLogger(PluginFactory.class);
-
-    public static Plugin createPlugin(Path path, PluginDescriptor descriptor) {
-        try {
-            CustomClassLoader classLoader = new CustomClassLoader(path, PluginFactory.class.getClassLoader());
+    public static Plugin createPlugin(Path path, PluginWrapper pluginWrapper, PluginDescriptor descriptor) throws PluginLoadException {
+        try (CustomClassLoader classLoader = new CustomClassLoader(path, PluginFactory.class.getClassLoader())) {
             Class<?> pluginClass = classLoader.loadClass(descriptor.getPluginClass());
-            return (Plugin) pluginClass.getDeclaredConstructor().newInstance();
+            return (Plugin) pluginClass.getDeclaredConstructor(PluginWrapper.class, PluginDescriptor.class).newInstance(pluginWrapper, descriptor);
         } catch (Exception e) {
-            logger.error("Failed to create plugin", e);
-            return null;
+            throw new PluginLoadException("Failed to create plugin", e);
         }
     }
 }

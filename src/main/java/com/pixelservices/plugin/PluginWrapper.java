@@ -1,6 +1,7 @@
 package com.pixelservices.plugin;
 
 import com.pixelservices.plugin.descriptor.PluginDescriptor;
+import com.pixelservices.plugin.exceptions.PluginLoadException;
 import com.pixelservices.plugin.lifecycle.PluginState;
 import com.pixelservices.plugin.manager.PluginManager;
 
@@ -19,20 +20,14 @@ public class PluginWrapper {
         this.path = path;
     }
 
-    public boolean load() {
-        this.plugin = PluginFactory.createPlugin(path, pluginDescriptor);
-        if (plugin == null) {
-            state = PluginState.FAILED;
-            return false;
-        }
+    public void load() throws PluginLoadException {
         try {
-            plugin.load(pluginDescriptor);
+            this.plugin = PluginFactory.createPlugin(path, this, pluginDescriptor);
+            state = PluginState.LOADED;
         } catch (Exception e) {
             state = PluginState.FAILED;
-            return false;
+            throw new PluginLoadException(e.getMessage(), e);
         }
-        state = PluginState.LOADED;
-        return true;
     }
 
     public Plugin getPlugin() {
@@ -49,5 +44,9 @@ public class PluginWrapper {
 
     public void setState(PluginState state) {
         this.state = state;
+    }
+
+    public PluginManager getPluginManager() {
+        return pluginManager;
     }
 }

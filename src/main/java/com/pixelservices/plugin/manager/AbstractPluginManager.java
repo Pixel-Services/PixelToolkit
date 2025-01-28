@@ -8,6 +8,7 @@ import com.pixelservices.plugin.descriptor.finder.PluginDescriptorFinder;
 import com.pixelservices.plugin.descriptor.finder.YamlDescriptorFinder;
 import com.pixelservices.plugin.exceptions.CircularDependencyException;
 import com.pixelservices.plugin.exceptions.MissingDependencyException;
+import com.pixelservices.plugin.exceptions.PluginLoadException;
 import com.pixelservices.plugin.lifecycle.PluginState;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public abstract class AbstractPluginManager implements PluginManager {
             paths.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".jar"))
                     .forEach(this::createPluginWrapperFromPath);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Error while creating plugin wrappers", e);
         }
     }
@@ -84,10 +85,11 @@ public abstract class AbstractPluginManager implements PluginManager {
             if (pluginWrapper.getState() != PluginState.CREATED) {
                 return;
             }
-            if (!pluginWrapper.load()) {
-                logger.error("Failed to load plugin: " + pluginWrapper.getPluginDescriptor().getPluginId());
-            } else {
+            try {
+                pluginWrapper.load();
                 logger.debug("Loaded plugin: " + pluginWrapper.getPluginDescriptor().getPluginId());
+            } catch (PluginLoadException e) {
+                logger.error("Failed to load plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
             }
         });
     }
