@@ -139,7 +139,12 @@ public abstract class AbstractPluginManager implements PluginManager {
             logger.error("DescriptionFinder was unable to find a plugin descriptor for path: " + path);
             return;
         }
-        logger.debug("Found plugin descriptor for " + pluginDescriptor.getPluginId());
+        String pluginId = pluginDescriptor.getPluginId();
+        if (getPlugin(pluginId) != null) {
+            logger.error("Duplicate found. A plugin with the ID " + pluginId + " is already registered.");
+            return;
+        }
+        logger.debug("Found plugin descriptor for " + pluginId);
         pluginWrappers.add(new PluginWrapper(this, pluginDescriptor, path));
     }
 }
