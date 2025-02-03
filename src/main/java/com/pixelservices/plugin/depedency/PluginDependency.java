@@ -1,7 +1,5 @@
 package com.pixelservices.plugin.depedency;
 
-import java.util.Objects;
-
 public class PluginDependency {
     private final String pluginId;
     private final boolean optional;

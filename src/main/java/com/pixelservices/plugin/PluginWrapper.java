@@ -1,5 +1,6 @@
 package com.pixelservices.plugin;
 
+import com.pixelservices.plugin.configuration.finder.PluginConfigurationFinder;
 import com.pixelservices.plugin.descriptor.PluginDescriptor;
 import com.pixelservices.plugin.exceptions.PluginLoadException;
 import com.pixelservices.plugin.lifecycle.PluginState;
@@ -11,19 +12,21 @@ public class PluginWrapper {
     private final PluginDescriptor pluginDescriptor;
     private final Path path;
     private final PluginManager pluginManager;
+    private final PluginConfigurationFinder configurationFinder;
     private Plugin plugin;
     private PluginState state = PluginState.CREATED;
 
-    public PluginWrapper(PluginManager pluginManager, PluginDescriptor pluginDescriptor, Path path) {
+    public PluginWrapper(PluginManager pluginManager, PluginDescriptor pluginDescriptor, PluginConfigurationFinder configurationFinder, Path path) {
         this.pluginManager = pluginManager;
         this.pluginDescriptor = pluginDescriptor;
+        this.configurationFinder = configurationFinder;
         this.path = path;
     }
 
     public void load() throws PluginLoadException {
         try {
             this.plugin = PluginFactory.createPlugin(path, pluginDescriptor);
-            plugin.load(this, pluginDescriptor);
+            plugin.load(this, pluginDescriptor, configurationFinder);
             state = PluginState.LOADED;
         } catch (Exception e) {
             state = PluginState.FAILED;
@@ -54,5 +57,9 @@ public class PluginWrapper {
 
     public PluginManager getPluginManager() {
         return pluginManager;
+    }
+
+    public Path getPath() {
+        return path;
     }
 }

@@ -2,6 +2,8 @@ package com.pixelservices.plugin.manager;
 
 import com.pixelservices.logger.Logger;
 import com.pixelservices.plugin.PluginWrapper;
+import com.pixelservices.plugin.configuration.finder.PluginConfigurationFinder;
+import com.pixelservices.plugin.configuration.finder.YamlConfigurationFinder;
 import com.pixelservices.plugin.depedency.PluginDependency;
 import com.pixelservices.plugin.descriptor.PluginDescriptor;
 import com.pixelservices.plugin.descriptor.finder.PluginDescriptorFinder;
@@ -23,6 +25,7 @@ public abstract class AbstractPluginManager implements PluginManager {
     protected final Logger logger = Logger.getLogger(this.getClass());
     private final List<PluginWrapper> pluginWrappers = new ArrayList<>();
     private final PluginDescriptorFinder descriptorFinder;
+    private final PluginConfigurationFinder configurationFinder;
     private final Path pluginDirectory;
 
     public AbstractPluginManager() {
@@ -34,6 +37,10 @@ public abstract class AbstractPluginManager implements PluginManager {
     }
 
     public AbstractPluginManager(Path directory, PluginDescriptorFinder descriptorFinder) {
+        this(directory, descriptorFinder, new YamlConfigurationFinder());
+    }
+
+    public AbstractPluginManager(Path directory, PluginDescriptorFinder descriptorFinder, PluginConfigurationFinder configurationFinder) {
         pluginDirectory = directory;
 
         if (!Files.exists(pluginDirectory)) {
@@ -45,6 +52,7 @@ public abstract class AbstractPluginManager implements PluginManager {
         }
 
         this.descriptorFinder = descriptorFinder;
+        this.configurationFinder = configurationFinder;
         createPluginWrappers();
         loadPlugins();
     }
@@ -171,6 +179,6 @@ public abstract class AbstractPluginManager implements PluginManager {
             return;
         }
         logger.debug("Found plugin descriptor for " + pluginId);
-        pluginWrappers.add(new PluginWrapper(this, pluginDescriptor, path));
+        pluginWrappers.add(new PluginWrapper(this, pluginDescriptor, configurationFinder, path));
     }
 }
