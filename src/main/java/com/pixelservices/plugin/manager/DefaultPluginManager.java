@@ -7,6 +7,7 @@ import com.pixelservices.plugin.lifecycle.PluginState;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DefaultPluginManager extends AbstractPluginManager {
     public DefaultPluginManager() {
@@ -22,18 +23,35 @@ public class DefaultPluginManager extends AbstractPluginManager {
     }
 
     public void start() {
+        AtomicInteger failedCount = new AtomicInteger();
+
         getPlugins().forEach(pluginWrapper -> {
-            if (pluginWrapper.getState().equals(PluginState.LOADED)) {
-                ((SimplePlugin) pluginWrapper.getPlugin()).start();
+            try {
+                if (pluginWrapper.getState().equals(PluginState.LOADED)) {
+                    ((SimplePlugin) pluginWrapper.getPlugin()).start();
+                }
+            } catch (Throwable e) {
+                pluginWrapper.setState(PluginState.FAILED);
+                logger.error("Failed to start plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
+                failedCount.getAndIncrement();
             }
         });
+
+        logger.info("Successfully started " + (getPlugins().size() - failedCount.get()) + " plugins. Failed to start " + failedCount.get() + " plugins.");
     }
 
     public void stop() {
         getPlugins().forEach(pluginWrapper -> {
-            if (pluginWrapper.getState().equals(PluginState.LOADED)) {
-                ((SimplePlugin) pluginWrapper.getPlugin()).stop();
+            try {
+                if (pluginWrapper.getState().equals(PluginState.LOADED)) {
+                    ((SimplePlugin) pluginWrapper.getPlugin()).stop();
+                }
+            } catch (Throwable e){
+                pluginWrapper.setState(PluginState.FAILED);
+                logger.error("Failed to stop plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
             }
         });
+
+        unloadPlugins();
     }
 }

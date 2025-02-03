@@ -22,12 +22,18 @@ public class PluginWrapper {
 
     public void load() throws PluginLoadException {
         try {
-            this.plugin = PluginFactory.createPlugin(path, this, pluginDescriptor);
+            this.plugin = PluginFactory.createPlugin(path, pluginDescriptor);
+            plugin.load(this, pluginDescriptor);
             state = PluginState.LOADED;
         } catch (Exception e) {
             state = PluginState.FAILED;
             throw new PluginLoadException(e.getMessage(), e);
         }
+    }
+
+    public void unload() {
+        plugin = null;
+        state = PluginState.UNLOADED;
     }
 
     public Plugin getPlugin() {

@@ -4,4 +4,5 @@ public enum PluginState {
     CREATED,
     LOADED,
     FAILED,
+    UNLOADED
 }

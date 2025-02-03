@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractPluginManager implements PluginManager {
-    private final Logger logger = Logger.getLogger(AbstractPluginManager.class);
+    protected final Logger logger = Logger.getLogger(this.getClass());
     private final List<PluginWrapper> pluginWrappers = new ArrayList<>();
     private final PluginDescriptorFinder descriptorFinder;
     private final Path pluginDirectory;
@@ -90,6 +90,14 @@ public abstract class AbstractPluginManager implements PluginManager {
                 logger.debug("Loaded plugin: " + pluginWrapper.getPluginDescriptor().getPluginId());
             } catch (PluginLoadException e) {
                 logger.error("Failed to load plugin: " + pluginWrapper.getPluginDescriptor().getPluginId(), e);
+            }
+        });
+    }
+
+    protected void unloadPlugins(){
+        pluginWrappers.forEach(pluginWrapper -> {
+            if (pluginWrapper.getState() == PluginState.LOADED) {
+                pluginWrapper.unload();
             }
         });
     }

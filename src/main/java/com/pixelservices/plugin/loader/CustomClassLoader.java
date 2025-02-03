@@ -30,6 +30,18 @@ public class CustomClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return super.loadClass(name);
+        try {
+            return super.loadClass(name);
+        } catch (ClassNotFoundException e) {
+            for (URL url : getURLs()) {
+                try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url}, getParent())) {
+                    return urlClassLoader.loadClass(name);
+                } catch (ClassNotFoundException ignored) {
+                } catch (IOException ioException) {
+                    throw new ClassNotFoundException("Failed to load class due to IO error", ioException);
+                }
+            }
+            throw e;
+        }
     }
 }
