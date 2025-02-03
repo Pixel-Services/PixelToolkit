@@ -1,17 +1,14 @@
 package com.pixelservices.plugin.descriptor.finder;
 
-import com.pixelservices.logger.Logger;
 import com.pixelservices.plugin.depedency.PluginDependency;
 import com.pixelservices.plugin.descriptor.DefaultPluginDescriptor;
 import com.pixelservices.plugin.descriptor.PluginDescriptor;
-import org.simpleyaml.configuration.Configuration;
 import org.simpleyaml.configuration.ConfigurationSection;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
