@@ -94,12 +94,28 @@ public abstract class AbstractPluginManager implements PluginManager {
         });
     }
 
-    protected void unloadPlugins(){
+    protected void unloadPlugins() {
         pluginWrappers.forEach(pluginWrapper -> {
             if (pluginWrapper.getState() == PluginState.LOADED) {
                 pluginWrapper.unload();
             }
         });
+
+        pluginWrappers.clear();
+    }
+
+    protected void unloadPlugin(String pluginId) {
+        PluginWrapper pluginWrapper = getPlugin(pluginId);
+        if (pluginWrapper != null) {
+            pluginWrapper.unload();
+            pluginWrappers.remove(pluginWrapper);
+        }
+    }
+
+    protected void reloadPlugins() {
+        unloadPlugins();
+        createPluginWrappers();
+        loadPlugins();
     }
 
     private List<PluginWrapper> sortPluginsByDependencies(List<PluginWrapper> plugins) {
