@@ -6,7 +6,6 @@ import com.pixelservices.logger.level.Level;
 import com.pixelservices.logger.listeners.LoggerLogEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,7 +34,7 @@ public class Logger {
      * @return the logger for the specified class
      */
     public static Logger getLogger(Class<?> clazz) {
-        return LoggerFactory.getLogger(clazz.getName());
+        return LoggerFactory.getLogger(clazz.getSimpleName());
     }
 
     /**
