@@ -15,6 +15,10 @@ public class YamlPluginConfig extends PluginConfig {
         this.file = new File(String.valueOf(filePath));
     }
 
+    public YamlConfiguration getYamlConfiguration() {
+        return yamlConfig;
+    }
+
     @Override
     public String getString(String path) {
         return yamlConfig.getString(path);
