@@ -7,14 +7,12 @@ import com.pixelservices.plugin.loader.CustomClassLoader;
 import java.nio.file.Path;
 
 public class PluginFactory {
-
     public static Plugin createPlugin(Path path, PluginDescriptor descriptor) throws PluginLoadException {
         try (CustomClassLoader classLoader = new CustomClassLoader(path, PluginFactory.class.getClassLoader())) {
             Class<?> pluginClass = classLoader.loadClass(descriptor.getPluginClass());
             return (Plugin) pluginClass.newInstance();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new PluginLoadException("Failed to create plugin", e);
         }
     }
-
 }

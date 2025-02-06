@@ -28,7 +28,7 @@ public class PluginWrapper {
             this.plugin = PluginFactory.createPlugin(path, pluginDescriptor);
             plugin.load(this, pluginDescriptor, configurationFinder);
             state = PluginState.LOADED;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             state = PluginState.FAILED;
             throw new PluginLoadException(e.getMessage(), e);
         }
